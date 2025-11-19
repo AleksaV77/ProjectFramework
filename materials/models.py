@@ -1,6 +1,11 @@
 from django.db import models
 
+from config.settings import AUTH_USER_MODEL
+
+
 class Course(models.Model):
+    """ Модель курса """
+
     course_name = models.CharField(max_length=50, verbose_name="Название курса")
     images = models.ImageField(
         upload_to="course/images",
@@ -9,7 +14,7 @@ class Course(models.Model):
         verbose_name="Фото",
         help_text="Загрузите фотографию",
     )
-    course_description = models.CharField(max_length=250, verbose_name="Описание")
+    course_description = models.TextField(max_length=250, verbose_name="Описание")
 
     class Meta:
         verbose_name = "Курс"
@@ -20,6 +25,8 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
+    """ Модель урока """
+
     lesson_name = models.CharField(max_length=50, verbose_name="Название урока")
     images = models.ImageField(
         upload_to="lesson/images",
