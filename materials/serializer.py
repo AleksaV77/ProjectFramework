@@ -1,7 +1,10 @@
+from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
-from materials.models import Course, Lesson
+from materials.models import Course, Lesson, Subscription
+from materials.validators import validator_youtube
+
 
 class LessonSerializer(ModelSerializer):
     """ Сериализатор для модели Lesson. Возвращает количество уроков в курсе """
@@ -37,3 +40,10 @@ class CourseDetailSerializer(ModelSerializer):
     class Meta:
         model = Course
         fields = ("course_name", "course_description", "count_course_number_of_lessons")
+
+class SubscriptionSerializer(ModelSerializer):
+    """ Сериализатор для управления подписками """
+
+    class Meta:
+        model = Subscription
+        fields = ("sign_of_subscription",)

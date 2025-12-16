@@ -15,6 +15,13 @@ class Course(models.Model):
         help_text="Загрузите фотографию",
     )
     course_description = models.TextField(max_length=250, verbose_name="Описание")
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Пользователь",
+    )
 
     class Meta:
         verbose_name = "Курс"
@@ -45,6 +52,13 @@ class Lesson(models.Model):
         null=True,
         blank=True,
     )
+    owner = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Пользователь",
+    )
 
     class Meta:
         verbose_name = "Урок"
@@ -52,3 +66,15 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.lesson_name} {self.lesson_description}"
+
+class Subscription(models.Model):
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Пользователь')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс')
+    sign_of_subscription = models.BooleanField(default=False, verbose_name='Признак подписки')
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+
+    def __str__(self):
+        return f'{self.user}: {self.course}'
