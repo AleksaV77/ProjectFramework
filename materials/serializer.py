@@ -1,15 +1,14 @@
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
-from rest_framework.serializers import ModelSerializer
 
 from materials.models import Course, Lesson, Subscription
-from materials.validators import validator_youtube
+from materials.validators import ValidatorYouTube
 
 
-class LessonSerializer(ModelSerializer):
+class LessonSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели Lesson. Возвращает количество уроков в курсе """
 
-    courses = SerializerMethodField()
+    courses = serializers.SerializerMethodField()
+    validators = [ValidatorYouTube(field="video")]
 
     def get_courses(self, lesson):
         if hasattr(lesson, 'course') and lesson.course:
@@ -20,7 +19,8 @@ class LessonSerializer(ModelSerializer):
         model = Lesson
         fields = "__all__"
 
-class CourseSerializer(ModelSerializer):
+
+class CourseSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели Course. Возвращает список уроков в курсе """
 
     lessons = LessonSerializer(many=True, read_only=True)
@@ -29,19 +29,24 @@ class CourseSerializer(ModelSerializer):
         model = Course
         fields = "__all__"
 
-class CourseDetailSerializer(ModelSerializer):
+class CourseDetailSerializer(serializers.ModelSerializer):
     """ Сериализатор для модели Course. Считает количество уроков в курсе """
 
-    count_course_number_of_lessons = SerializerMethodField()
+    count_course_number_of_lessons = serializers.SerializerMethodField()
+    subscription = serializers.SerializerMethodField()
 
     def get_count_course_number_of_lessons(self, course):
         return Lesson.objects.filter(course=course).count()
 
+    def get_subscription(self, course):
+        user = self.context['request'].user
+        return Subscription.objects.all().filter(user=user).filter(course=course).exists()
+
     class Meta:
         model = Course
-        fields = ("course_name", "course_description", "count_course_number_of_lessons")
+        fields = ("course_name", "course_description", "count_course_number_of_lessons", "subscription")
 
-class SubscriptionSerializer(ModelSerializer):
+class SubscriptionSerializer(serializers.ModelSerializer):
     """ Сериализатор для управления подписками """
 
     class Meta:
