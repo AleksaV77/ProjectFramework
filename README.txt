@@ -41,3 +41,5 @@ https://github.com/AleksaV77/ProjectFramework.git
 ```
 pip install -r requirements.txt
 ```
+3. Установите Docker
+4. В консоли введите команду: docker-compose up -d --build
